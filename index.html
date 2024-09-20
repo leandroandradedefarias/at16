@@ -7,15 +7,20 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
         }
-        form {
-            margin-bottom: 20px;
+
+        input {
+            margin-bottom: 10px;
         }
+
         @media (max-width: 600px) {
-            form, table {
-                width: 100%;
-                font-size: 14px;
+            body {
+                padding: 10px;
             }
         }
     </style>
@@ -23,48 +28,34 @@
 <body>
 
     <h1>Consulta de Alunos</h1>
-
-    <form id="formConsulta">
-        <label for="codigoConsulta">Código do Aluno:</label><br>
-        <input type="text" id="codigoConsulta" required><br><br>
-
-        <button type="submit">Consultar</button>
-    </form>
+    <input type="text" id="codigoConsulta" placeholder="Digite o Código do Aluno">
+    <button onclick="consultarAluno()">Consultar</button>
 
     <div id="resultadoConsulta"></div>
 
     <script>
-        const formConsulta = document.getElementById('formConsulta');
-        const resultadoConsulta = document.getElementById('resultadoConsulta');
+        function consultarAluno() {
+            const codigo = document.getElementById("codigoConsulta").value;
+            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            const aluno = alunos.find(aluno => aluno.codigo === codigo);
 
-        // Função para buscar aluno no localStorage
-        function buscarAluno(codigo) {
-            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
-            return alunos.find(aluno => aluno.codigo === codigo);
-        }
-
-        // Evento de submissão do formulário
-        formConsulta.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const codigo = document.getElementById('codigoConsulta').value;
-            const aluno = buscarAluno(codigo);
-
+            const resultadoDiv = document.getElementById("resultadoConsulta");
             if (aluno) {
-                resultadoConsulta.innerHTML = `
-                    <p><strong>Nome:</strong> ${aluno.nome}</p>
-                    <p><strong>Faixa:</strong> ${aluno.faixa}</p>
-                    <p><strong>Taxa:</strong> ${aluno.taxa}</p>
-                    <p><strong>Desconto:</strong> ${aluno.desconto}</p>
-                    <p><strong>Motivo:</strong> ${aluno.motivo}</p>
-                    <p><strong>Data Exame:</strong> ${aluno.dataExame}</p>
-                    <p><strong>Data Entrega:</strong> ${aluno.dataEntrega}</p>
+                resultadoDiv.innerHTML = `
+                    <p>Nome: ${aluno.nome}</p>
+                    <p>Faixa: ${aluno.faixa}</p>
+                    <p>Taxa de Graduação: ${aluno.taxa}</p>
+                    <p>Desconto: ${aluno.desconto}</p>
+                    <p>Motivo do Desconto: ${aluno.motivoDesconto}</p>
+                    <p>Valor da Graduação: ${aluno.valorGraduacao}</p>
+                    <p>Data do Exame: ${aluno.dataExame}</p>
+                    <p>Data de Entrega de Faixas: ${aluno.dataEntregaFaixas}</p>
                 `;
             } else {
-                resultadoConsulta.innerHTML = `<p>Aluno não encontrado!</p>`;
+                resultadoDiv.innerHTML = "<p>Aluno não encontrado.</p>";
             }
-        });
+        }
     </script>
-
 </body>
 </html>
+
