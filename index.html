@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Alunos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            form, table {
+                width: 100%;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Consulta de Alunos</h1>
+
+    <form id="formConsulta">
+        <label for="codigoConsulta">Código do Aluno:</label><br>
+        <input type="text" id="codigoConsulta" required><br><br>
+
+        <button type="submit">Consultar</button>
+    </form>
+
+    <div id="resultadoConsulta"></div>
+
+    <script>
+        const formConsulta = document.getElementById('formConsulta');
+        const resultadoConsulta = document.getElementById('resultadoConsulta');
+
+        // Função para buscar aluno no localStorage
+        function buscarAluno(codigo) {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            return alunos.find(aluno => aluno.codigo === codigo);
+        }
+
+        // Evento de submissão do formulário
+        formConsulta.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const codigo = document.getElementById('codigoConsulta').value;
+            const aluno = buscarAluno(codigo);
+
+            if (aluno) {
+                resultadoConsulta.innerHTML = `
+                    <p><strong>Nome:</strong> ${aluno.nome}</p>
+                    <p><strong>Faixa:</strong> ${aluno.faixa}</p>
+                    <p><strong>Taxa:</strong> ${aluno.taxa}</p>
+                    <p><strong>Desconto:</strong> ${aluno.desconto}</p>
+                    <p><strong>Motivo:</strong> ${aluno.motivo}</p>
+                    <p><strong>Data Exame:</strong> ${aluno.dataExame}</p>
+                    <p><strong>Data Entrega:</strong> ${aluno.dataEntrega}</p>
+                `;
+            } else {
+                resultadoConsulta.innerHTML = `<p>Aluno não encontrado!</p>`;
+            }
+        });
+    </script>
+
+</body>
+</html>

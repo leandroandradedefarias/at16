@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Alunos</title>
+    <style>
+        /* Estilos para tornar a página responsiva */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        form {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            table, td, th {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cadastro de Alunos</h1>
+    <form id="alunoForm">
+        <input type="text" id="codigo" placeholder="Código do Aluno" required>
+        <input type="text" id="nome" placeholder="Nome do Aluno" required>
+        <input type="text" id="faixa" placeholder="Faixa" required>
+        <input type="number" id="taxa" placeholder="Taxa de Graduação" required>
+        <input type="number" id="desconto" placeholder="Desconto" required>
+        <input type="text" id="motivoDesconto" placeholder="Motivo do Desconto">
+        <input type="number" id="valorGraduacao" placeholder="Valor da Graduação" required>
+        <input type="date" id="dataExame" required>
+        <input type="date" id="dataEntregaFaixas" required>
+        <button type="submit">Cadastrar Aluno</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Faixa</th>
+                <th>Excluir</th>
+            </tr>
+        </thead>
+        <tbody id="alunosTableBody">
+            <!-- Alunos serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        // Carregar alunos do localStorage ao carregar a página
+        document.addEventListener("DOMContentLoaded", function () {
+            carregarAlunos();
+        });
+
+        const alunoForm = document.getElementById("alunoForm");
+        const alunosTableBody = document.getElementById("alunosTableBody");
+
+        alunoForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            
+            const aluno = {
+                codigo: document.getElementById("codigo").value,
+                nome: document.getElementById("nome").value,
+                faixa: document.getElementById("faixa").value,
+                taxa: document.getElementById("taxa").value,
+                desconto: document.getElementById("desconto").value,
+                motivoDesconto: document.getElementById("motivoDesconto").value,
+                valorGraduacao: document.getElementById("valorGraduacao").value,
+                dataExame: document.getElementById("dataExame").value,
+                dataEntregaFaixas: document.getElementById("dataEntregaFaixas").value
+            };
+
+            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            alunos.push(aluno);
+            localStorage.setItem("alunos", JSON.stringify(alunos));
+
+            carregarAlunos();
+            alunoForm.reset();
+        });
+
+        function carregarAlunos() {
+            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            alunosTableBody.innerHTML = "";
+
+            alunos.forEach((aluno, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${aluno.codigo}</td>
+                    <td>${aluno.nome}</td>
+                    <td>${aluno.faixa}</td>
+                    <td><button onclick="excluirAluno(${index})">Excluir</button></td>
+                `;
+                alunosTableBody.appendChild(row);
+            });
+        }
+
+        function excluirAluno(index) {
+            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            alunos.splice(index, 1);
+            localStorage.setItem("alunos", JSON.stringify(alunos));
+            carregarAlunos();
+        }
+    </script>
+</body>
+</html>
