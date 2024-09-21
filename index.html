@@ -125,4 +125,59 @@
 <body>
 
     <!-- Imagem atos16.png com espaço de três linhas -->
-    <img src="atos16.png
+    <img src="atos16.png" alt="Imagem Atos 16">
+
+    <!-- Mensagem de parabéns -->
+    <div class="parabens">PARABÉNS PELA SUA GRADUAÇÃO!</div>
+
+    <!-- Imagem informativa (texto.png) centralizada e com espaçamento -->
+    <div class="texto-informativo">
+        <img src="texto.png" alt="Texto Informativo">
+    </div>
+
+    <!-- Campo de consulta -->
+    <input type="text" id="codigoConsulta" placeholder="Digite o Código do Aluno">
+    <button onclick="consultarAluno()">Consultar</button>
+
+    <!-- Tabela de resultado -->
+    <div id="resultadoConsulta" class="resultado"></div>
+
+    <!-- Imagem riobjj.png no final da página -->
+    <img src="riobjj.png" alt="Imagem Rio BJJ" class="footer-img">
+
+    <script>
+        // Função para formatar a data para o formato DD/MM/AAAA
+        function formatarData(dataISO) {
+            const data = new Date(dataISO);
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0'); // Meses são base 0
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function consultarAluno() {
+            const codigo = document.getElementById("codigoConsulta").value;
+            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+            const aluno = alunos.find(aluno => aluno.codigo === codigo);
+
+            const resultadoDiv = document.getElementById("resultadoConsulta");
+            if (aluno) {
+                resultadoDiv.innerHTML = `
+                    <table>
+                        <tr><th>Nome</th><td>${aluno.nome}</td></tr>
+                        <tr><th>Faixa</th><td>${aluno.faixa}</td></tr>
+                        <tr><th>Taxa de Graduação</th><td>${aluno.taxa}</td></tr>
+                        <tr><th>Desconto</th><td>${aluno.desconto}</td></tr>
+                        <tr><th>Motivo do Desconto</th><td>${aluno.motivoDesconto}</td></tr>
+                        <tr><th>Valor da Graduação</th><td>${aluno.valorGraduacao}</td></tr>
+                        <tr><th>Data do Exame</th><td>${formatarData(aluno.dataExame)}</td></tr>
+                        <tr><th>Data de Entrega de Faixas</th><td>${formatarData(aluno.dataEntregaFaixas)}</td></tr>
+                    </table>
+                `;
+            } else {
+                resultadoDiv.innerHTML = "<p>Aluno não encontrado.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
