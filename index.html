@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Consulta de Alunos</title>
     <style>
         body {
@@ -15,6 +15,7 @@
             justify-content: flex-start;
             padding: 20px;
             text-align: center;
+            max-width: 100%; /* Para evitar overflow horizontal */
         }
 
         /* Espaço de três linhas antes da imagem */
@@ -22,10 +23,6 @@
             width: 200px;
             height: auto;
             margin-top: 60px; /* Aproximadamente três linhas de espaço */
-            margin-bottom: 20px;
-        }
-
-        h1 {
             margin-bottom: 20px;
         }
 
@@ -52,6 +49,7 @@
             margin-bottom: 10px;
             width: 250px;
             font-size: 16px;
+            max-width: 90%; /* Responsivo para caber em telas menores */
         }
 
         button {
@@ -61,6 +59,7 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
+            max-width: 90%; /* Responsivo para caber em telas menores */
         }
 
         button:hover {
@@ -77,6 +76,7 @@
             font-style: italic; /* Fonte em itálico */
             margin-left: auto; /* Centralizando a tabela */
             margin-right: auto; /* Centralizando a tabela */
+            max-width: 90%; /* Responsivo para caber em telas menores */
         }
 
         th, td {
@@ -95,27 +95,29 @@
             margin-top: 60px; /* Adicionando espaço antes da imagem final */
         }
 
+        /* Responsividade geral para telas menores */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
-            }
-
-            input, button {
-                width: 100%;
-                font-size: 14px;
             }
 
             .parabens {
                 font-size: 20px;
             }
 
-            .texto-informativo img {
-                width: 100%; /* Para garantir que a imagem se ajuste ao tamanho da tela em dispositivos móveis */
+            /* Ajustando as imagens para telas menores */
+            .texto-informativo img,
+            .footer-img {
+                width: 100%; /* Garantindo que a imagem se ajuste ao tamanho da tela em dispositivos móveis */
                 height: auto;
             }
 
             table {
                 width: 100%; /* Para telas menores, a tabela ocupa 100% da largura */
+            }
+
+            input, button {
+                width: 100%; /* Ajustando a largura de input e botão em telas menores */
             }
         }
     </style>
@@ -123,59 +125,4 @@
 <body>
 
     <!-- Imagem atos16.png com espaço de três linhas -->
-    <img src="atos16.png" alt="Imagem Atos 16">
-
-    <!-- Mensagem de parabéns -->
-    <div class="parabens">PARABÉNS PELA SUA GRADUAÇÃO!</div>
-
-    <!-- Imagem informativa (texto.png) centralizada e com espaçamento -->
-    <div class="texto-informativo">
-        <img src="texto.png" alt="Texto Informativo">
-    </div>
-
-    <!-- Campo de consulta -->
-    <input type="text" id="codigoConsulta" placeholder="Digite o Código do Aluno">
-    <button onclick="consultarAluno()">Consultar</button>
-
-    <!-- Tabela de resultado -->
-    <div id="resultadoConsulta" class="resultado"></div>
-
-    <!-- Imagem riobjj.png no final da página -->
-    <img src="riobjj.png" alt="Imagem Rio BJJ" class="footer-img">
-
-    <script>
-        // Função para formatar a data para o formato DD/MM/AAAA
-        function formatarData(dataISO) {
-            const data = new Date(dataISO);
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0'); // Meses são base 0
-            const ano = data.getFullYear();
-            return `${dia}/${mes}/${ano}`;
-        }
-
-        function consultarAluno() {
-            const codigo = document.getElementById("codigoConsulta").value;
-            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-            const aluno = alunos.find(aluno => aluno.codigo === codigo);
-
-            const resultadoDiv = document.getElementById("resultadoConsulta");
-            if (aluno) {
-                resultadoDiv.innerHTML = `
-                    <table>
-                        <tr><th>Nome</th><td>${aluno.nome}</td></tr>
-                        <tr><th>Faixa</th><td>${aluno.faixa}</td></tr>
-                        <tr><th>Taxa de Graduação</th><td>${aluno.taxa}</td></tr>
-                        <tr><th>Desconto</th><td>${aluno.desconto}</td></tr>
-                        <tr><th>Motivo do Desconto</th><td>${aluno.motivoDesconto}</td></tr>
-                        <tr><th>Valor da Graduação</th><td>${aluno.valorGraduacao}</td></tr>
-                        <tr><th>Data do Exame</th><td>${formatarData(aluno.dataExame)}</td></tr>
-                        <tr><th>Data de Entrega de Faixas</th><td>${formatarData(aluno.dataEntregaFaixas)}</td></tr>
-                    </table>
-                `;
-            } else {
-                resultadoDiv.innerHTML = "<p>Aluno não encontrado.</p>";
-            }
-        }
-    </script>
-</body>
-</html>
+    <img src="atos16.png
