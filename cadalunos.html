@@ -5,129 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Alunos</title>
     <style>
-        /* Estilos para tornar a página responsiva */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        form {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-        }
-
-        table {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-
-        td, th {
-            border: 1px solid #ddd;
-            padding: 8px;
+            background-color: #2c2c2c;
+            color: white;
+            padding: 20px;
             text-align: center;
         }
 
-        @media (max-width: 600px) {
-            table, td, th {
-                font-size: 12px;
-            }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input {
+            width: 300px;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid white;
+        }
+
+        th {
+            background-color: #333;
         }
     </style>
 </head>
 <body>
 
     <h1>Cadastro de Alunos</h1>
-    <form id="alunoForm">
-        <input type="text" id="codigo" placeholder="Código do Aluno" required>
-        <input type="text" id="nome" placeholder="Nome do Aluno" required>
-        <input type="text" id="faixa" placeholder="Faixa" required>
-        <input type="number" id="taxa" placeholder="Taxa de Graduação" required>
-        <input type="number" id="desconto" placeholder="Desconto" required>
-        <input type="text" id="motivoDesconto" placeholder="Motivo do Desconto">
-        <input type="number" id="valorGraduacao" placeholder="Valor da Graduação" required>
-        <input type="date" id="dataExame" required>
-        <input type="date" id="dataEntregaFaixas" required>
+
+    <form id="cadastroForm">
+        <input type="text" id="codigoAluno" placeholder="Código do Aluno" required><br>
+        <input type="text" id="nomeAluno" placeholder="Nome do Aluno" required><br>
+        <input type="text" id="faixa" placeholder="Faixa" required><br>
+        <input type="number" id="taxaGraduacao" placeholder="Taxa de Graduação" required><br>
+        <input type="number" id="desconto" placeholder="Desconto (%)"><br>
+        <input type="text" id="motivoDesconto" placeholder="Motivo do Desconto"><br>
+        <input type="number" id="valorGraduacao" placeholder="Valor da Graduação" required><br>
+        <input type="date" id="dataExame" required><br>
+        <input type="date" id="dataEntregaFaixas" required><br>
         <button type="submit">Cadastrar Aluno</button>
     </form>
 
-    <table>
+    <table id="tabelaAlunos">
         <thead>
             <tr>
                 <th>Código</th>
                 <th>Nome</th>
                 <th>Faixa</th>
-                <th>Excluir</th>
+                <th>Taxa</th>
+                <th>Desconto</th>
+                <th>Motivo Desconto</th>
+                <th>Valor</th>
+                <th>Data Exame</th>
+                <th>Data Entrega Faixas</th>
             </tr>
         </thead>
-        <tbody id="alunosTableBody">
-            <!-- Alunos serão inseridos aqui -->
+        <tbody>
+            <!-- Alunos cadastrados serão exibidos aqui -->
         </tbody>
     </table>
 
     <script>
-        // Carregar alunos do localStorage ao carregar a página
-        document.addEventListener("DOMContentLoaded", function () {
-            carregarAlunos();
-        });
+        const apiKey = 'AIzaSyASMZPLJzQ5GCLOzXJs4WRDn7FZTmwJrlg'; // Substitua pela sua chave API
+        const spreadsheetId = '1D167AYSZ5imnfz0GqlJ_rchpwnCI-AIExa6pk2mO1ys'; // Substitua pelo ID da sua planilha
+        const range = 'Folha1'; // Altere para o nome da aba e intervalo desejado
 
-        const alunoForm = document.getElementById("alunoForm");
-        const alunosTableBody = document.getElementById("alunosTableBody");
+        document.getElementById('cadastroForm').onsubmit = function(event) {
+            event.preventDefault();
+            cadastrarAluno();
+        };
 
-        alunoForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            
+        function cadastrarAluno() {
             const aluno = {
-                codigo: document.getElementById("codigo").value,
-                nome: document.getElementById("nome").value,
+                codigo: document.getElementById("codigoAluno").value,
+                nome: document.getElementById("nomeAluno").value,
                 faixa: document.getElementById("faixa").value,
-                taxa: document.getElementById("taxa").value,
-                desconto: document.getElementById("desconto").value,
-                motivoDesconto: document.getElementById("motivoDesconto").value,
-                valorGraduacao: document.getElementById("valorGraduacao").value,
-                dataExame: document.getElementById("dataExame").value,
-                dataEntregaFaixas: document.getElementById("dataEntregaFaixas").value
+                taxa: document.getElementById("taxaGraduacao").value,
+                desconto: document.getElementById("desconto").value || 0,
+                motivo_desconto: document.getElementById("motivoDesconto").value || '',
+                valor: document.getElementById("valorGraduacao").value,
+                data_exame: document.getElementById("dataExame").value,
+                data_entrega_faixas: document.getElementById("dataEntregaFaixas").value
             };
 
-            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-            alunos.push(aluno);
-            localStorage.setItem("alunos", JSON.stringify(alunos));
+            const values = [
+                [aluno.codigo, aluno.nome, aluno.faixa, aluno.taxa, aluno.desconto, aluno.motivo_desconto, aluno.valor, aluno.data_exame, aluno.data_entrega_faixas]
+            ];
 
-            carregarAlunos();
-            alunoForm.reset();
-        });
+            const body = {
+                values: values
+            };
 
-        function carregarAlunos() {
-            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-            alunosTableBody.innerHTML = "";
-
-            alunos.forEach((aluno, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${aluno.codigo}</td>
-                    <td>${aluno.nome}</td>
-                    <td>${aluno.faixa}</td>
-                    <td><button onclick="excluirAluno(${index})">Excluir</button></td>
-                `;
-                alunosTableBody.appendChild(row);
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('Aluno cadastrado com sucesso!');
+                carregarAlunos();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar aluno.');
             });
         }
 
-        function excluirAluno(index) {
-            let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-            alunos.splice(index, 1);
-            localStorage.setItem("alunos", JSON.stringify(alunos));
-            carregarAlunos();
+        function carregarAlunos() {
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                const tabelaAlunos = document.getElementById("tabelaAlunos").getElementsByTagName("tbody")[0];
+                tabelaAlunos.innerHTML = ''; // Limpar tabela
+                data.values.forEach(row => {
+                    const newRow = tabelaAlunos.insertRow();
+                    row.forEach(cell => {
+                        const newCell = newRow.insertCell();
+                        newCell.textContent = cell;
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
         }
+
+        window.onload = carregarAlunos;
     </script>
+
 </body>
 </html>
