@@ -15,7 +15,7 @@
             justify-content: flex-start;
             padding: 20px;
             text-align: center;
-            max-width: 100%; /* Para evitar overflow horizontal */
+            max-width: 100%;
         }
 
         img {
@@ -29,11 +29,11 @@
             color: yellow;
             font-size: 24px;
             margin-top: 30px;
-            margin-bottom: 10px; /* Apenas uma linha de espaçamento */
+            margin-bottom: 10px;
         }
 
         .texto-informativo {
-            margin-bottom: 30px; /* Espaço de três linhas antes do campo de consulta */
+            margin-bottom: 30px;
         }
 
         .texto-informativo img {
@@ -86,10 +86,20 @@
             background-color: #f2f2f2;
         }
 
+        /* Ajuste para a imagem "texto2" abaixo da tabela */
+        .texto2-img {
+            width: 500px;
+            height: 500px;
+            object-fit: cover;
+            margin-top: 30px; /* Mesmo espaço entre a tabela e imagem "texto" */
+            margin-bottom: 20px; /* Espaço para a imagem "riobjj.png" */
+        }
+
+        /* Ajuste da imagem "riobjj.png" para 90x90px */
         .footer-img {
-            width: 150px;
-            height: auto;
-            margin-top: 60px;
+            width: 90px;
+            height: 90px;
+            margin-top: 90px;
         }
 
         @media (max-width: 600px) {
@@ -102,7 +112,8 @@
             }
 
             .texto-informativo img,
-            .footer-img {
+            .footer-img,
+            .texto2-img {
                 width: 100%;
                 height: auto;
             }
@@ -123,7 +134,7 @@
     <img src="atos16.png" alt="Imagem Atos 16">
 
     <!-- Mensagem de parabéns -->
-    <div class="parabens">PARABÉNS PELA SUA GRADUAÇÃO!</div>
+    <div class="parabens">PARABÉNS PELA SUA INDICAÇÃO!</div>
 
     <!-- Imagem informativa (texto.png) -->
     <div class="texto-informativo">
@@ -137,7 +148,10 @@
     <!-- Tabela de resultado -->
     <div id="resultadoConsulta" class="resultado"></div>
 
-    <!-- Imagem riobjj.png -->
+    <!-- Imagem texto2.png abaixo da tabela -->
+    <img src="texto2.png" alt="Imagem Texto 2" class="texto2-img">
+
+    <!-- Imagem riobjj.png com tamanho ajustado -->
     <img src="riobjj.png" alt="Imagem Rio BJJ" class="footer-img">
 
     <script>
