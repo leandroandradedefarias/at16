@@ -18,11 +18,10 @@
             max-width: 100%; /* Para evitar overflow horizontal */
         }
 
-        /* Espaço de três linhas antes da imagem */
         img {
             width: 200px;
             height: auto;
-            margin-top: 60px; /* Aproximadamente três linhas de espaço */
+            margin-top: 60px;
             margin-bottom: 20px;
         }
 
@@ -33,7 +32,6 @@
             margin-bottom: 10px; /* Apenas uma linha de espaçamento */
         }
 
-        /* Ajuste para imagem texto.png com tamanho de 500x500px */
         .texto-informativo {
             margin-bottom: 30px; /* Espaço de três linhas antes do campo de consulta */
         }
@@ -49,7 +47,7 @@
             margin-bottom: 10px;
             width: 250px;
             font-size: 16px;
-            max-width: 90%; /* Responsivo para caber em telas menores */
+            max-width: 90%;
         }
 
         button {
@@ -59,24 +57,23 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
-            max-width: 90%; /* Responsivo para caber em telas menores */
+            max-width: 90%;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        /* Estilo da tabela */
         table {
-            width: 500px; /* Definindo a largura da tabela para 500px */
+            width: 500px;
             margin-top: 20px;
             background-color: white;
             color: black;
             border-collapse: collapse;
-            font-style: italic; /* Fonte em itálico */
-            margin-left: auto; /* Centralizando a tabela */
-            margin-right: auto; /* Centralizando a tabela */
-            max-width: 90%; /* Responsivo para caber em telas menores */
+            font-style: italic;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 90%;
         }
 
         th, td {
@@ -92,10 +89,9 @@
         .footer-img {
             width: 150px;
             height: auto;
-            margin-top: 60px; /* Adicionando espaço antes da imagem final */
+            margin-top: 60px;
         }
 
-        /* Responsividade geral para telas menores */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -105,32 +101,31 @@
                 font-size: 20px;
             }
 
-            /* Ajustando as imagens para telas menores */
             .texto-informativo img,
             .footer-img {
-                width: 100%; /* Garantindo que a imagem se ajuste ao tamanho da tela em dispositivos móveis */
+                width: 100%;
                 height: auto;
             }
 
             table {
-                width: 100%; /* Para telas menores, a tabela ocupa 100% da largura */
+                width: 100%;
             }
 
             input, button {
-                width: 100%; /* Ajustando a largura de input e botão em telas menores */
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Imagem atos16.png com espaço de três linhas -->
+    <!-- Imagem atos16.png -->
     <img src="atos16.png" alt="Imagem Atos 16">
 
     <!-- Mensagem de parabéns -->
     <div class="parabens">PARABÉNS PELA SUA GRADUAÇÃO!</div>
 
-    <!-- Imagem informativa (texto.png) centralizada e com espaçamento -->
+    <!-- Imagem informativa (texto.png) -->
     <div class="texto-informativo">
         <img src="texto.png" alt="Texto Informativo">
     </div>
@@ -142,40 +137,51 @@
     <!-- Tabela de resultado -->
     <div id="resultadoConsulta" class="resultado"></div>
 
-    <!-- Imagem riobjj.png no final da página -->
+    <!-- Imagem riobjj.png -->
     <img src="riobjj.png" alt="Imagem Rio BJJ" class="footer-img">
 
     <script>
-        // Função para formatar a data para o formato DD/MM/AAAA
-        function formatarData(dataISO) {
-            const data = new Date(dataISO);
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0'); // Meses são base 0
-            const ano = data.getFullYear();
-            return `${dia}/${mes}/${ano}`;
-        }
+        const apiKey = 'AIzaSyASMZPLJzQ5GCLOzXJs4WRDn7FZTmwJrlg'; // Substitua pela sua chave API
+        const spreadsheetId = '1D167AYSZ5imnfz0GqlJ_rchpwnCI-AIExa6pk2mO1ys'; // Substitua pelo ID da sua planilha
+        const range = 'Folha1'; // Altere para o nome da aba e intervalo desejado
 
-        function consultarAluno() {
+        async function consultarAluno() {
             const codigo = document.getElementById("codigoConsulta").value;
-            const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
-            const aluno = alunos.find(aluno => aluno.codigo === codigo);
 
-            const resultadoDiv = document.getElementById("resultadoConsulta");
-            if (aluno) {
-                resultadoDiv.innerHTML = `
-                    <table>
-                        <tr><th>Nome</th><td>${aluno.nome}</td></tr>
-                        <tr><th>Faixa</th><td>${aluno.faixa}</td></tr>
-                        <tr><th>Taxa de Graduação</th><td>${aluno.taxa}</td></tr>
-                        <tr><th>Desconto</th><td>${aluno.desconto}</td></tr>
-                        <tr><th>Motivo do Desconto</th><td>${aluno.motivoDesconto}</td></tr>
-                        <tr><th>Valor da Graduação</th><td>${aluno.valorGraduacao}</td></tr>
-                        <tr><th>Data do Exame</th><td>${formatarData(aluno.dataExame)}</td></tr>
-                        <tr><th>Data de Entrega de Faixas</th><td>${formatarData(aluno.dataEntregaFaixas)}</td></tr>
-                    </table>
-                `;
-            } else {
-                resultadoDiv.innerHTML = "<p>Aluno não encontrado.</p>";
+            if (!codigo) {
+                document.getElementById("resultadoConsulta").innerHTML = "<p>Por favor, insira um código de aluno.</p>";
+                return;
+            }
+
+            try {
+                // Busca os dados diretamente da planilha do Google Sheets
+                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`);
+                const data = await response.json();
+                
+                const alunos = data.values;
+                const aluno = alunos.find(row => row[0] === codigo); // A primeira coluna contém o código do aluno
+
+                const resultadoDiv = document.getElementById("resultadoConsulta");
+
+                if (aluno) {
+                    resultadoDiv.innerHTML = `
+                        <table>
+                            <tr><th>Nome</th><td>${aluno[1]}</td></tr>
+                            <tr><th>Faixa</th><td>${aluno[2]}</td></tr>
+                            <tr><th>Taxa de Graduação</th><td>${aluno[3]}</td></tr>
+                            <tr><th>Desconto</th><td>${aluno[4]}</td></tr>
+                            <tr><th>Motivo do Desconto</th><td>${aluno[5]}</td></tr>
+                            <tr><th>Valor da Graduação</th><td>${aluno[6]}</td></tr>
+                            <tr><th>Data do Exame</th><td>${aluno[7]}</td></tr>
+                            <tr><th>Data de Entrega de Faixas</th><td>${aluno[8]}</td></tr>
+                        </table>
+                    `;
+                } else {
+                    resultadoDiv.innerHTML = "<p>Aluno não encontrado.</p>";
+                }
+            } catch (error) {
+                console.error("Erro ao consultar o aluno:", error);
+                document.getElementById("resultadoConsulta").innerHTML = "<p>Erro ao consultar o aluno. Tente novamente mais tarde.</p>";
             }
         }
     </script>
