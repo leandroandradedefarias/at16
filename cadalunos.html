@@ -13,14 +13,10 @@
             text-align: center;
         }
 
-        input, button {
+        button {
             margin: 10px;
             padding: 10px;
             font-size: 16px;
-        }
-
-        input {
-            width: 300px;
         }
 
         table {
@@ -37,24 +33,28 @@
         th {
             background-color: #333;
         }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        #gerarCertificados {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
     <h1>Cadastro de Alunos</h1>
-
-    <form id="cadastroForm">
-        <input type="text" id="codigoAluno" placeholder="Código do Aluno" required><br>
-        <input type="text" id="nomeAluno" placeholder="Nome do Aluno" required><br>
-        <input type="text" id="faixa" placeholder="Faixa" required><br>
-        <input type="number" id="taxaGraduacao" placeholder="Taxa de Graduação" required><br>
-        <input type="number" id="desconto" placeholder="Desconto (%)"><br>
-        <input type="text" id="motivoDesconto" placeholder="Motivo do Desconto"><br>
-        <input type="number" id="valorGraduacao" placeholder="Valor da Graduação" required><br>
-        <input type="date" id="dataExame" required><br>
-        <input type="date" id="dataEntregaFaixas" required><br>
-        <button type="submit">Cadastrar Aluno</button>
-    </form>
 
     <table id="tabelaAlunos">
         <thead>
@@ -68,6 +68,7 @@
                 <th>Valor</th>
                 <th>Data Exame</th>
                 <th>Data Entrega Faixas</th>
+                <th>Ação</th>
             </tr>
         </thead>
         <tbody>
@@ -75,55 +76,12 @@
         </tbody>
     </table>
 
+    <button id="gerarCertificados">Gerar Certificados</button>
+
     <script>
         const apiKey = 'AIzaSyASMZPLJzQ5GCLOzXJs4WRDn7FZTmwJrlg'; // Substitua pela sua chave API
         const spreadsheetId = '1D167AYSZ5imnfz0GqlJ_rchpwnCI-AIExa6pk2mO1ys'; // Substitua pelo ID da sua planilha
         const range = 'Folha1'; // Altere para o nome da aba e intervalo desejado
-
-        document.getElementById('cadastroForm').onsubmit = function(event) {
-            event.preventDefault();
-            cadastrarAluno();
-        };
-
-        function cadastrarAluno() {
-            const aluno = {
-                codigo: document.getElementById("codigoAluno").value,
-                nome: document.getElementById("nomeAluno").value,
-                faixa: document.getElementById("faixa").value,
-                taxa: document.getElementById("taxaGraduacao").value,
-                desconto: document.getElementById("desconto").value || 0,
-                motivo_desconto: document.getElementById("motivoDesconto").value || '',
-                valor: document.getElementById("valorGraduacao").value,
-                data_exame: document.getElementById("dataExame").value,
-                data_entrega_faixas: document.getElementById("dataEntregaFaixas").value
-            };
-
-            const values = [
-                [aluno.codigo, aluno.nome, aluno.faixa, aluno.taxa, aluno.desconto, aluno.motivo_desconto, aluno.valor, aluno.data_exame, aluno.data_entrega_faixas]
-            ];
-
-            const body = {
-                values: values
-            };
-
-            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Aluno cadastrado com sucesso!');
-                carregarAlunos();
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao cadastrar aluno.');
-            });
-        }
 
         function carregarAlunos() {
             fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`)
@@ -131,18 +89,48 @@
             .then(data => {
                 const tabelaAlunos = document.getElementById("tabelaAlunos").getElementsByTagName("tbody")[0];
                 tabelaAlunos.innerHTML = ''; // Limpar tabela
-                data.values.forEach(row => {
+                data.values.forEach((row, index) => {
                     const newRow = tabelaAlunos.insertRow();
                     row.forEach(cell => {
                         const newCell = newRow.insertCell();
                         newCell.textContent = cell;
                     });
+                    const deleteCell = newRow.insertCell();
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Excluir";
+                    deleteButton.classList.add("delete-button");
+                    deleteButton.onclick = () => excluirAluno(index + 1); // Adicionar índice +1 porque a linha 0 é o cabeçalho
+                    deleteCell.appendChild(deleteButton);
                 });
             })
             .catch(error => {
                 console.error('Erro:', error);
             });
         }
+
+        function excluirAluno(index) {
+            const deleteRange = `Folha1!A${index}:I${index}`; // Seleciona a linha a ser excluída
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${deleteRange}:clear?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('Aluno excluído com sucesso!');
+                carregarAlunos();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao excluir aluno.');
+            });
+        }
+
+        document.getElementById('gerarCertificados').onclick = function() {
+            window.location.href = 'https://drive.google.com/file/d/1FxHdDgsu2kwgwrxqL_KuZYsOKUvi_wH1/view?usp=sharing';
+        };
 
         window.onload = carregarAlunos;
     </script>
